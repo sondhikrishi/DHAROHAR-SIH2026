@@ -71,28 +71,28 @@
         <ul class="nav-links">
             <li class="nav-item">
                 <a class="nav-link active" onclick="switchTab('dashboard', this)">
-                    📊 Dashboard (अवलोकन)
+                     Dashboard (अवलोकन)
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" onclick="switchTab('search', this)">
-                    🔍 Land Search (भूलेख खोज)
+                     Land Search (भूलेख खोज)
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" onclick="switchTab('upload', this)">
-                    📄 Upload & OCR (दस्तावेज़ ओसीआर)
+                    Upload & OCR (दस्तावेज़ ओसीआर)
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" onclick="switchTab('validation', this)">
-                    ⚠️ Validation & Duplicate Alerts (सत्यापन)
+                     Validation & Duplicate Alerts (सत्यापन)
                     <span class="nav-badge" id="nav-duplicate-counter">3 Alerts</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" onclick="switchTab('audit', this)">
-                    📋 Audit Logs (ऑडिट लॉग)
+                    Audit Logs (ऑडिट लॉग)
                 </a>
             </li>
         </ul>
@@ -108,7 +108,7 @@
         <!-- Global Critical Notice for Duplicate Land Conflicts -->
         <div class="system-alert danger">
             <div>
-                <strong>⚠️ SYSTEM ALERT:</strong> Duplicate title conveyance flagged for Khasra #112/A in Tehsil Sadar. Injunction order recommended.
+                <strong>SYSTEM ALERT:</strong> Duplicate title conveyance flagged for Khasra #112/A in Tehsil Sadar. Injunction order recommended.
             </div>
             <button class="btn btn-danger" style="padding: 4px 10px; font-size: 11px;" onclick="switchTab('validation', null)">Inspect Conflicts</button>
         </div>
@@ -185,25 +185,25 @@
                     <div class="panel-header">Administrative Shortcuts</div>
                     <div class="action-button-list">
                         <button class="btn-action-tile" onclick="switchTab('upload', null)">
-                            <span>📄 Upload Physical Land Deed (OCR)</span>
+                            <span>Upload Physical Land Deed (OCR)</span>
                             <span>&rarr;</span>
                         </button>
                         <button class="btn-action-tile" onclick="switchTab('search', null)">
-                            <span>🔍 Search RoR by Khasra Number</span>
+                            <span> Search RoR by Khasra Number</span>
                             <span>&rarr;</span>
                         </button>
                         <button class="btn-action-tile" onclick="switchTab('validation', null)">
-                            <span>⚠️ Resolve Duplicate Survey Conflicts</span>
+                            <span> Resolve Duplicate Survey Conflicts</span>
                             <span>&rarr;</span>
                         </button>
                         <button class="btn-action-tile" onclick="switchTab('audit', null)">
-                            <span>📋 View Inspection Audit Trail</span>
+                            <span> View Inspection Audit Trail</span>
                             <span>&rarr;</span>
                         </button>
                     </div>
 
                     <div style="margin-top: 20px; background: #eaf2f8; padding: 12px; border-radius: 4px; font-size: 12px;">
-                        <strong style="color: var(--gov-navy);">💡 Role Demonstration Tip:</strong><br>
+                        <strong style="color: var(--gov-navy);"> Role Demonstration Tip:</strong><br>
                         Toggle active roles using the top right dropdown to explore Citizen vs. Patwari vs. Super Admin permissions.
                     </div>
                 </div>
@@ -441,7 +441,7 @@ Awaiting document buffer...
 
                         <div style="display: flex; gap: 8px;">
                             <button type="submit" class="btn btn-success" id="btn-commit-registry">
-                                💾 Verify & Save to Registry
+                                 Verify & Save to Registry
                             </button>
                             <button type="button" class="btn btn-secondary" onclick="document.getElementById('extracted-cadastral-form').reset()">Clear</button>
                         </div>
@@ -490,7 +490,7 @@ Awaiting document buffer...
                     <p>Chronological immutable record of all OCR extractions, title modifications, and administrative injunctions</p>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-primary" onclick="exportAuditLogsToCSV()">📥 Export Logs (CSV)</button>
+                    <button class="btn btn-primary" onclick="exportAuditLogsToCSV()"> Export Logs (CSV)</button>
                 </div>
             </div>
 
@@ -551,7 +551,7 @@ Awaiting document buffer...
                 <!-- Injected dynamically by JavaScript -->
             </div>
             <div class="modal-foot">
-                <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Certificate</button>
+                <button class="btn btn-secondary" onclick="window.print()"> Print Certificate</button>
                 <button class="btn btn-primary" onclick="closeLandDeedModal()">Close</button>
             </div>
         </div>
