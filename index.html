@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHAROHAR: AI-Powered Land Record Digitization & Validation System</title>
+    <!-- Government Department Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Top Tricolor Border -->
+    <div class="tricolor-strip"></div>
+
+    <!-- 2. Utility & Accessibility Bar -->
+    <div class="top-utility-bar">
+        <div class="utility-left">
+            <span>🏛️ भारत सरकार | Government of India — Department of Land Resources</span>
+            <span id="live-ist-clock">🕒 Loading Date & Time...</span>
+        </div>
+        <div class="utility-right">
+            <span>Font Size:</span>
+            <button class="accessibility-btn" onclick="setAccessibilityFontSize('small')">A-</button>
+            <button class="accessibility-btn" onclick="setAccessibilityFontSize('normal')">A</button>
+            <button class="accessibility-btn" onclick="setAccessibilityFontSize('large')">A+</button>
+            <span style="color: #999;">|</span>
+            <button class="accessibility-btn" onclick="resetDemoData()" title="Reset mock data to initial demo state">🔄 Reset Demo Data</button>
+        </div>
+    </div>
+
+    <!-- 3. Helpline & Announcements Ticker -->
+    <div class="ticker-bar">
+        <span class="ticker-tag">NOTICE</span>
+        <span>Toll-Free Revenue Helpline: <strong>1800-180-1551</strong> | Digital India Land Records Modernization Programme (DILRMP) | Secure REST API Gateway: <strong>v1.0.4 Online</strong></span>
+    </div>
+
+    <!-- 4. Official Government Header -->
+    <header class="main-header">
+        <div class="branding-group">
+            <div class="emblem-icon">
+                <div class="emblem-text">सत्य</div>
+                <div class="emblem-sub">GOVT OF INDIA</div>
+            </div>
+            <div class="title-group">
+                <span class="title-hindi">राष्ट्रीय भू-अभिलेख डिजिटलीकरण एवं सत्यापन पोर्टल</span>
+                <h1>DHAROHAR:AI-Powered Land Record Digitization & Validation System</h1>
+                <h2>Ministry of Rural Development & State Land Revenue Administration</h2>
+            </div>
+        </div>
+
+        <!-- Role & User Profile Authentication Area -->
+        <div class="header-auth-box">
+            <div class="user-profile-badge">
+                <div class="user-name" id="user-display-name">Shri R. K. Sharma</div>
+                <div class="user-role-label" id="user-display-role">Role: Patwari (पटवारी/राजस्व अधिकारी)</div>
+            </div>
+            <div>
+                <label for="role-selector-dropdown" style="font-size: 10px; color: var(--text-muted); display: block;">Switch Active Role:</label>
+                <select id="role-selector-dropdown" class="role-select-box" onchange="switchRole(this.value)">
+                    <option value="patwari">Patwari / Revenue Officer (पटवारी)</option>
+                    <option value="admin">Super Admin / Tehsildar (तहसीलदार)</option>
+                    <option value="citizen">Citizen / Landowner (नागरिक)</option>
+                </select>
+            </div>
+            <button class="btn-auth-modal" onclick="openAuthModal()">🔐 Login</button>
+        </div>
+    </header>
+
+    <!-- 5. Navigation Bar -->
+    <nav class="nav-bar">
+        <ul class="nav-links">
+            <li class="nav-item">
+                <a class="nav-link active" onclick="switchTab('dashboard', this)">
+                    📊 Dashboard (अवलोकन)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('search', this)">
+                    🔍 Land Search (भूलेख खोज)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('upload', this)">
+                    📄 Upload & OCR (दस्तावेज़ ओसीआर)
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('validation', this)">
+                    ⚠️ Validation & Duplicate Alerts (सत्यापन)
+                    <span class="nav-badge" id="nav-duplicate-counter">3 Alerts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="switchTab('audit', this)">
+                    📋 Audit Logs (ऑडिट लॉग)
+                </a>
+            </li>
+        </ul>
+        <div class="nav-status">
+            <span>●</span>
+            <small>Database Sync: Active</small>
+        </div>
+    </nav>
+
+    <!-- 6. Main Application Body -->
+    <main class="main-container">
+
+        <!-- Global Critical Notice for Duplicate Land Conflicts -->
+        <div class="system-alert danger">
+            <div>
+                <strong>⚠️ SYSTEM ALERT:</strong> Duplicate title conveyance flagged for Khasra #112/A in Tehsil Sadar. Injunction order recommended.
+            </div>
+            <button class="btn btn-danger" style="padding: 4px 10px; font-size: 11px;" onclick="switchTab('validation', null)">Inspect Conflicts</button>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB 1: DASHBOARD (अवलोकन)                                     -->
+        <!-- ============================================================== -->
+        <section id="tab-dashboard" class="tab-pane active">
+            <div class="section-head">
+                <div>
+                    <h2>State Land Records Overview (राज्य भूलेख अवलोकन)</h2>
+                    <p>Real-time statistics of cadastral plots, OCR digitisation pipeline, and dispute alerts</p>
+                </div>
+                <button class="btn btn-primary" onclick="switchTab('upload', null)">+ Scan & Digitise New Deed</button>
+            </div>
+
+            <!-- KPI Summary Cards -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-title">Total Digitised Deeds</div>
+                    <div class="stat-value" id="kpi-total-records">6</div>
+                    <div class="stat-sub">Across 18 Registered Villages</div>
+                </div>
+                <div class="stat-box green">
+                    <div class="stat-title">Verified & Validated</div>
+                    <div class="stat-value" id="kpi-verified-records">3</div>
+                    <div class="stat-sub">100% Digital Signature Certified</div>
+                </div>
+                <div class="stat-box saffron">
+                    <div class="stat-title">Pending Verification</div>
+                    <div class="stat-value" id="kpi-pending-records">1</div>
+                    <div class="stat-sub">Awaiting Field Patwari Physical Check</div>
+                </div>
+                <div class="stat-box red">
+                    <div class="stat-title">Duplicate Fraud Alerts</div>
+                    <div class="stat-value" id="kpi-flagged-alerts">3</div>
+                    <div class="stat-sub">Overlapping Survey Claims Detected</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">Total Land Area</div>
+                    <div class="stat-value" id="kpi-total-acres">23.8 Ac</div>
+                    <div class="stat-sub">Settled & Cadastral Mapped</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Split Layout -->
+            <div class="dashboard-row">
+                <!-- Recent Registrations Table -->
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span>Recent Cadastral Registrations & OCR Ingestion</span>
+                        <a href="javascript:void(0)" onclick="switchTab('search', null)" style="font-size: 12px; color: var(--gov-navy); text-decoration: none;">View All Registry &rarr;</a>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="gov-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Khasra No</th>
+                                    <th>Owner Name</th>
+                                    <th>Village & Tehsil</th>
+                                    <th>Area (Acres)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-recent-table-body">
+                                <!-- Populated dynamically by app.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Side: Quick Action Shortcuts & Health -->
+                <div class="card-panel">
+                    <div class="panel-header">Administrative Shortcuts</div>
+                    <div class="action-button-list">
+                        <button class="btn-action-tile" onclick="switchTab('upload', null)">
+                            <span>📄 Upload Physical Land Deed (OCR)</span>
+                            <span>&rarr;</span>
+                        </button>
+                        <button class="btn-action-tile" onclick="switchTab('search', null)">
+                            <span>🔍 Search RoR by Khasra Number</span>
+                            <span>&rarr;</span>
+                        </button>
+                        <button class="btn-action-tile" onclick="switchTab('validation', null)">
+                            <span>⚠️ Resolve Duplicate Survey Conflicts</span>
+                            <span>&rarr;</span>
+                        </button>
+                        <button class="btn-action-tile" onclick="switchTab('audit', null)">
+                            <span>📋 View Inspection Audit Trail</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 20px; background: #eaf2f8; padding: 12px; border-radius: 4px; font-size: 12px;">
+                        <strong style="color: var(--gov-navy);">💡 Role Demonstration Tip:</strong><br>
+                        Toggle active roles using the top right dropdown to explore Citizen vs. Patwari vs. Super Admin permissions.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 2: LAND SEARCH (भूलेख खोज)                               -->
+        <!-- ============================================================== -->
+        <section id="tab-search" class="tab-pane">
+            <div class="section-head">
+                <div>
+                    <h2>Land Record Search & Cadastral Registry (भूलेख खोज एवं पंजी)</h2>
+                    <p>Search digitised Record of Rights (RoR / Khatauni) by Khasra number, Owner name, or District</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="exportLandRecordsToCSV()">📥 Export Registry (CSV)</button>
+                </div>
+            </div>
+
+            <!-- Search Filters Form -->
+            <div class="filter-card">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label>Khasra / Survey Number (खसरा नं):</label>
+                        <input type="text" class="form-input" id="search-khasra" placeholder="e.g. 304/1 or 112/A" oninput="filterRecords()">
+                    </div>
+                    <div class="form-field">
+                        <label>Landowner Name (खाताधारक नाम):</label>
+                        <input type="text" class="form-input" id="search-owner" placeholder="e.g. Sharma or Devi" oninput="filterRecords()">
+                    </div>
+                    <div class="form-field">
+                        <label>Khatauni Number (खतौनी संख्या):</label>
+                        <input type="text" class="form-input" id="search-khatauni" placeholder="e.g. KH-0089" oninput="filterRecords()">
+                    </div>
+                    <div class="form-field">
+                        <label>District (ज़िला):</label>
+                        <select class="form-input" id="filter-district" onchange="filterRecords()">
+                            <option value="ALL">All Districts</option>
+                            <option value="Jaipur Rural">Jaipur Rural</option>
+                            <option value="Pune North">Pune North</option>
+                            <option value="Indore Central">Indore Central</option>
+                            <option value="Lucknow Cantt">Lucknow Cantt</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Validation Status (स्थिति):</label>
+                        <select class="form-input" id="filter-status" onchange="filterRecords()">
+                            <option value="ALL">All Statuses</option>
+                            <option value="Verified">Verified (सत्यापित)</option>
+                            <option value="Pending">Pending (लंबित)</option>
+                            <option value="Flagged">Flagged Dispute (विवादित)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="resetSearchFilters()">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- Search Results Table -->
+            <div class="table-wrapper">
+                <table class="gov-data-table">
+                    <thead>
+                        <tr>
+                            <th>Record ID</th>
+                            <th>Khasra No</th>
+                            <th>Khatauni No</th>
+                            <th>Owner & Father's Name</th>
+                            <th>Village & Tehsil</th>
+                            <th>Area</th>
+                            <th>Validation Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="search-results-table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="search-results-counter" style="font-size: 12px; color: var(--text-muted); text-align: right;">
+                Showing 6 of 6 records
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 3: UPLOAD & OCR (दस्तावेज़ अपलोड एवं ओसीआर)                -->
+        <!-- ============================================================== -->
+        <section id="tab-upload" class="tab-pane">
+            <div class="section-head">
+                <div>
+                    <h2>Document Digitisation & AI OCR Text Extraction (दस्तावेज़ डिजिटलीकरण)</h2>
+                    <p>Ingest scanned sale deeds or 7/12 extracts to extract cadastral metadata using Optical Character Recognition</p>
+                </div>
+            </div>
+
+            <div class="ocr-split-layout">
+                <!-- Left: Upload & Scanner -->
+                <div class="card-panel">
+                    <h3 style="color: var(--gov-navy); font-size: 14px; margin-bottom: 12px;">Step 1: Ingest Scanned Document</h3>
+                    <form id="ocr-upload-form" onsubmit="handleOCRSubmission(event)">
+                        <div class="form-field" style="margin-bottom: 12px;">
+                            <label>Document Category:</label>
+                            <select class="form-input" id="upload-doc-category">
+                                <option value="Registered Sale Deed">Registered Sale Deed (बैनामा / विक्रय पत्र)</option>
+                                <option value="7/12 Extract (RoR)">Record of Rights / 7-12 Extract (खतौनी)</option>
+                                <option value="Mutation Certificate">Mutation Certificate (दाखिल ख़ारिज प्रमाण पत्र)</option>
+                                <option value="Encumbrance Certificate">Encumbrance Certificate (भार मुक्त प्रमाण पत्र)</option>
+                            </select>
+                        </div>
+
+                        <!-- Drag & Drop Dropzone -->
+                        <div class="upload-dropzone" onclick="document.getElementById('hidden-file-input').click()">
+                            <div class="dropzone-icon">📁</div>
+                            <strong>Click or Drag Document Here to Upload</strong>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Formats: PDF, PNG, JPG, TIFF (Max: 15MB)</div>
+                            <input type="file" id="hidden-file-input" style="display:none;" onchange="onFileSelected(this)" accept=".pdf,.png,.jpg,.jpeg">
+                            <div id="upload-file-feedback" style="margin-top: 6px; font-weight: bold; color: var(--gov-navy); font-size: 12px;">No document selected</div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Target Khasra / Survey No <span style="color:red;">*</span>:</label>
+                                <input type="text" class="form-input" id="upload-khasra-input" placeholder="e.g. 304/1" required>
+                            </div>
+                            <div class="form-field">
+                                <label>District:</label>
+                                <select class="form-input" id="upload-district-select">
+                                    <option value="Jaipur Rural">Jaipur Rural</option>
+                                    <option value="Pune North">Pune North</option>
+                                    <option value="Indore Central">Indore Central</option>
+                                    <option value="Lucknow Cantt">Lucknow Cantt</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="btn-start-ocr-scan" style="width: 100%; justify-content: center; margin-top: 12px;">
+                            ⚙️ Start Intelligent OCR Digitisation
+                        </button>
+                    </form>
+
+                    <!-- OCR Progress Visualizer with Scanning Beam -->
+                    <div class="ocr-scanner-box" id="ocr-scanner-visualizer">
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                            <span id="ocr-step-label">Initializing OCR Pipeline...</span>
+                            <span id="ocr-percent-label">0%</span>
+                        </div>
+                        <div class="scan-progress-bar">
+                            <div class="scan-progress-fill" id="ocr-scan-progress"></div>
+                        </div>
+                        <div class="ocr-terminal-text" id="ocr-live-terminal">
+Awaiting document buffer...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Extracted OCR Fields Form -->
+                <div class="card-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h3 style="color: var(--gov-navy); font-size: 14px;">Step 2: Review Extracted Cadastral Fields</h3>
+                        <span class="badge badge-warning" id="ocr-confidence-tag">Awaiting Extraction</span>
+                    </div>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px;">
+                        The Patwari or Revenue Officer can inspect, correct, and certify the extracted metadata prior to saving to the official ledger.
+                    </p>
+
+                    <form id="extracted-cadastral-form" onsubmit="saveExtractedRecordToRegistry(event)">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Khasra No:</label>
+                                <input type="text" class="form-input" id="ext-khasra-no" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Khatauni No:</label>
+                                <input type="text" class="form-input" id="ext-khatauni-no" required>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Registered Deed No:</label>
+                                <input type="text" class="form-input" id="ext-deed-no" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Market Valuation:</label>
+                                <input type="text" class="form-input" id="ext-market-value" required>
+                            </div>
+                        </div>
+
+                        <div class="form-field" style="margin-bottom: 10px;">
+                            <label>Owner Name (खाताधारक):</label>
+                            <input type="text" class="form-input" id="ext-owner-name" required>
+                        </div>
+
+                        <div class="form-field" style="margin-bottom: 10px;">
+                            <label>Father / Husband Name:</label>
+                            <input type="text" class="form-input" id="ext-father-name" required>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Land Area (Acres):</label>
+                                <input type="number" step="0.01" class="form-input" id="ext-land-area" required>
+                            </div>
+                            <div class="form-field">
+                                <label>Soil / Land Classification:</label>
+                                <select class="form-input" id="ext-soil-type">
+                                    <option value="Agricultural (Irrigated)">Agricultural (Irrigated)</option>
+                                    <option value="Agricultural (Dry Crop)">Agricultural (Dry Crop)</option>
+                                    <option value="Residential Plot">Residential Plot</option>
+                                    <option value="Commercial Land">Commercial Land</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label>Village:</label>
+                                <input type="text" class="form-input" id="ext-village" value="Rampur">
+                            </div>
+                            <div class="form-field">
+                                <label>Tehsil:</label>
+                                <input type="text" class="form-input" id="ext-tehsil" value="Sadar">
+                            </div>
+                            <div class="form-field">
+                                <label>District:</label>
+                                <input type="text" class="form-input" id="ext-district" value="Jaipur Rural">
+                            </div>
+                        </div>
+
+                        <div class="form-field" style="margin-bottom: 14px;">
+                            <label>Cadastral Boundaries (North, South, East, West):</label>
+                            <input type="text" class="form-input" id="ext-boundaries">
+                        </div>
+
+                        <div style="display: flex; gap: 8px;">
+                            <button type="submit" class="btn btn-success" id="btn-commit-registry">
+                                💾 Verify & Save to Registry
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('extracted-cadastral-form').reset()">Clear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 4: VALIDATION & DUPLICATE ALERTS (सत्यापन)                -->
+        <!-- ============================================================== -->
+        <section id="tab-validation" class="tab-pane">
+            <div class="section-head">
+                <div>
+                    <h2>Intelligent Validation & Duplicate Detection Engine (डुप्लीकेट एवं धोखाधड़ी रोकथाम)</h2>
+                    <p>Automated rules detecting overlapping cadastral boundaries, dual conveyance deeds, and rapid resales</p>
+                </div>
+                <button class="btn btn-danger" onclick="triggerSystemAuditScan()">⚡ Run Database Integrity Scan</button>
+            </div>
+
+            <!-- 5-Point Automated Verification Checklist -->
+            <div class="checklist-container">
+                <h3 style="color: var(--gov-navy); font-size: 14px; margin-bottom: 10px;">Automated 5-Point Cadastral Verification Protocol</h3>
+                <div id="validation-checklist-items">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+
+            <!-- List of Active Duplicate & Fraud Alerts -->
+            <div class="section-head" style="border-bottom: 1px solid #d5dbdb; margin-top: 24px; padding-bottom: 6px;">
+                <h3 style="color: var(--gov-red); font-size: 15px;">Active High-Risk Cadastral Conflict Alerts</h3>
+            </div>
+            
+            <div id="dispute-alerts-list">
+                <!-- Rendered dynamically by app.js -->
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 5: AUDIT LOGS (ऑडिट लॉग)                                  -->
+        <!-- ============================================================== -->
+        <section id="tab-audit" class="tab-pane">
+            <div class="section-head">
+                <div>
+                    <h2>Tamper-Proof Audit Trail & Transaction Logs (ऑडिट लॉग)</h2>
+                    <p>Chronological immutable record of all OCR extractions, title modifications, and administrative injunctions</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="exportAuditLogsToCSV()">📥 Export Logs (CSV)</button>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-card">
+                <div class="form-grid" style="margin-bottom: 0;">
+                    <div class="form-field">
+                        <label>Search by Keyword / Record Ref:</label>
+                        <input type="text" class="form-input" id="audit-filter-input" placeholder="e.g. Khasra 304, Injunction, Ingestion..." oninput="filterAuditLogs()">
+                    </div>
+                    <div class="form-field">
+                        <label>Filter by Role:</label>
+                        <select class="form-input" id="audit-role-select" onchange="filterAuditLogs()">
+                            <option value="ALL">All Roles</option>
+                            <option value="Patwari">Patwari (पटवारी)</option>
+                            <option value="Super Admin">Super Admin (तहसीलदार)</option>
+                            <option value="Citizen">Citizen (नागरिक)</option>
+                            <option value="System">System Engine</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Trail Table -->
+            <div class="table-wrapper">
+                <table class="gov-data-table">
+                    <thead>
+                        <tr>
+                            <th>Log ID</th>
+                            <th>Timestamp</th>
+                            <th>User ID</th>
+                            <th>Role</th>
+                            <th>Action Executed</th>
+                            <th>Record Reference</th>
+                            <th>IP Address</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-logs-table-body">
+                        <!-- Filled dynamically by app.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================== -->
+    <!-- MODAL 1: VIEW CERTIFIED LAND DEED (RoR / 7-12 EXTRACT)          -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="deed-viewer-modal">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3>Certified Record of Rights (अधिकार अभिलेख - खतौनी)</h3>
+                <button class="btn-close" onclick="closeLandDeedModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="deed-viewer-content">
+                <!-- Injected dynamically by JavaScript -->
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Certificate</button>
+                <button class="btn btn-primary" onclick="closeLandDeedModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL 2: USER LOGIN / AUTHENTICATION MODAL                     -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="auth-login-modal">
+        <div class="modal-card" style="max-width: 400px;">
+            <div class="modal-head">
+                <h3>Department Portal Authentication</h3>
+                <button class="btn-close" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleLoginSubmit(event)">
+                    <div class="form-field" style="margin-bottom: 12px;">
+                        <label>Employee Code / Citizen ID:</label>
+                        <input type="text" class="form-input" id="login-input-user" value="REV-OFFICER-441" required>
+                    </div>
+                    <div class="form-field" style="margin-bottom: 12px;">
+                        <label>Password / Security PIN:</label>
+                        <input type="password" class="form-input" value="password123" required>
+                    </div>
+                    <div class="form-field" style="margin-bottom: 14px;">
+                        <label>Select Role:</label>
+                        <select class="form-input" id="login-input-role">
+                            <option value="patwari">Patwari / Revenue Officer (पटवारी)</option>
+                            <option value="admin">Super Admin / Tehsildar (तहसीलदार)</option>
+                            <option value="citizen">Citizen / Landowner (नागरिक)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        🔐 Authenticate Session
+                    </button>
+                    <p style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px;">
+                        (Flask REST API endpoint: <code>POST /api/login</code> ready)
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- 8. OFFICIAL GOVERNMENT FOOTER                                  -->
+    <!-- ============================================================== -->
+    <footer class="gov-footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>DHAROHAR: AI-Powered Land Record Digitization & Validation System</h4>
+                <p>
+                    A digital initiative for Cadastral parcel digitisation, optical character text extraction, and automated duplicate title detection under DILRMP standards.
+                </p>
+                <p style="margin-top: 6px;">
+                    Department of Land Resources & Land Revenue Administration.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>National Portals & RTI</h4>
+                <ul>
+                    <li><a href="javascript:void(0)">National Portal of India</a></li>
+                    <li><a href="javascript:void(0)">Digital India Land Records (DILRMP)</a></li>
+                    <li><a href="javascript:void(0)">Right to Information (RTI) Online</a></li>
+                    <li><a href="javascript:void(0)">State Revenue Directorate</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Helpdesk & Technical Support</h4>
+                <p>Toll-Free Helpline: 1800-180-1551</p>
+                <p>Email: support@dharohar-prototype.local</p>
+                <p>State Data Centre, IT Park, Sector 5</p>
+                <p>Backend: Python Flask v3.0 REST API</p>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            © 2026 Department of Land Resources, Ministry of Rural Development, Government of India. Designed in HTML, CSS & Vanilla JS.
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Modules -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
