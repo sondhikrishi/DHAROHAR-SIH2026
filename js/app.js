@@ -10,9 +10,8 @@
 // 1. CONFIGURATION & STATE MANAGEMENT
 // ==========================================================================
 // Set to FALSE when running Flask backend (python backend/app.py) on localhost:5000!
-const USE_MOCK_DATA = true;
-const API_BASE_URL = "http://127.0.0.1:5000/api";
-
+const API_BASE_URL = "https://dharohar-sih2026.onrender.com/api";
+const USE_MOCK_DATA = false;
 // Active user session state
 let currentUser = {
     id: "PAT-402",
