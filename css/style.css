@@ -1,0 +1,873 @@
+/* ==========================================================================
+   DHAROHAR - AI-Powered Land Record Digitization & Validation System
+   CSS Stylesheet - Official Government Portal Aesthetic
+   Designed for: 1st Year B.Tech Engineering Project
+   ========================================================================== */
+
+/* --- 1. Color Palette & Global Variables --- */
+:root {
+    --gov-navy: #0b3c5d;        /* Primary Government Navy Blue */
+    --gov-navy-dark: #07273d;   /* Darker Navy for top header & footer */
+    --gov-navy-light: #165b8c;  /* Hover & Active Blue */
+    --gov-saffron: #e67e22;     /* Official Saffron Accent */
+    --gov-saffron-light: #f39c12;
+    --gov-green: #138808;       /* Tricolor / Verified Green */
+    --gov-red: #c0392b;         /* Duplicate Conflict / Alert Red */
+    --bg-main: #f4f6f9;         /* Government portal light grey */
+    --bg-card: #ffffff;         /* Pure white cards */
+    --text-primary: #1c2833;    /* High contrast dark text */
+    --text-muted: #566573;      /* Secondary label text */
+    --border-light: #d5dbdb;    /* Crisp table & card borders */
+    --radius: 6px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* --- 2. Global Resets --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.5;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 3. Tricolor Strip & Accessibility Top Bar --- */
+.tricolor-strip {
+    height: 5px;
+    background: linear-gradient(90deg, #FF9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%);
+    width: 100%;
+}
+
+.top-utility-bar {
+    background-color: #ebedef;
+    border-bottom: 1px solid var(--border-light);
+    padding: 5px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.utility-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-muted);
+}
+
+.utility-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.accessibility-btn {
+    background: #ffffff;
+    border: 1px solid #bdc3c7;
+    padding: 2px 7px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.accessibility-btn:hover {
+    background: #d5dbdb;
+}
+
+/* Ticker Notice */
+.ticker-bar {
+    background: #fcf3cf;
+    border-bottom: 1px solid #f9e79f;
+    padding: 4px 24px;
+    font-size: 12px;
+    color: #7d6608;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ticker-tag {
+    background: #b7950b;
+    color: white;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+/* --- 4. Main Government Header --- */
+.main-header {
+    background: #ffffff;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--gov-navy);
+}
+
+.branding-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.emblem-icon {
+    width: 58px;
+    height: 58px;
+    background: var(--gov-navy);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border: 2px solid var(--gov-saffron);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.emblem-icon .emblem-text {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.emblem-icon .emblem-sub {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.title-group h1 {
+    font-size: 18px;
+    color: var(--gov-navy);
+    font-weight: 700;
+}
+
+.title-group h2 {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.title-hindi {
+    font-size: 12px;
+    color: var(--gov-saffron);
+    font-weight: 600;
+    display: block;
+}
+
+/* User Role & Profile in Header */
+.header-auth-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.user-profile-badge {
+    background: #eaf2f8;
+    border: 1px solid #aed6f1;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    text-align: right;
+}
+
+.user-profile-badge .user-name {
+    font-weight: bold;
+    font-size: 13px;
+    color: var(--gov-navy);
+}
+
+.user-profile-badge .user-role-label {
+    font-size: 11px;
+    color: var(--gov-green);
+    font-weight: 600;
+    display: block;
+}
+
+.role-select-box {
+    padding: 6px 8px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    font-size: 12px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.btn-auth-modal {
+    background: var(--gov-navy);
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-auth-modal:hover {
+    background: var(--gov-navy-dark);
+}
+
+/* --- 5. Navigation Bar --- */
+.nav-bar {
+    background-color: var(--gov-navy);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.nav-item {
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: var(--gov-navy-light);
+    border-bottom: 3px solid var(--gov-saffron);
+}
+
+.nav-badge {
+    background: var(--gov-red);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.nav-status {
+    color: #abebc6;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --- 6. Main Container & Alert Banners --- */
+.main-container {
+    flex: 1;
+    max-width: 1280px;
+    width: 100%;
+    margin: 18px auto;
+    padding: 0 16px;
+}
+
+.system-alert {
+    background: #fcf3cf;
+    border-left: 5px solid var(--gov-saffron);
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    border-radius: var(--radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.system-alert.danger {
+    background: #fadbd8;
+    border-left-color: var(--gov-red);
+    color: #78281f;
+}
+
+/* Tab Sections */
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-head {
+    border-bottom: 2px solid #e5e8e8;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-head h2 {
+    color: var(--gov-navy);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.section-head p {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* --- 7. Dashboard Cards Grid --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.stat-box {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--gov-navy);
+}
+
+.stat-box.green { border-top-color: var(--gov-green); }
+.stat-box.saffron { border-top-color: var(--gov-saffron); }
+.stat-box.red { border-top-color: var(--gov-red); }
+
+.stat-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 6px 0 2px 0;
+}
+
+.stat-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Dashboard 2-column layout */
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+}
+
+.card-panel {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
+}
+
+.panel-header {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gov-navy);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Quick Action Buttons */
+.action-button-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.btn-action-tile {
+    background: #f8f9fa;
+    border: 1px solid #d5dbdb;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gov-navy);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-action-tile:hover {
+    background: var(--gov-navy);
+    color: white;
+    border-color: var(--gov-navy);
+}
+
+/* --- 8. Tables & Badges --- */
+.table-wrapper {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+    margin-bottom: 18px;
+}
+
+.gov-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.gov-data-table th {
+    background-color: var(--gov-navy);
+    color: #ffffff;
+    padding: 10px 12px;
+    font-weight: 600;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.gov-data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.gov-data-table tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+.gov-data-table tr:hover {
+    background-color: #ebf5fb;
+}
+
+/* Standard Badges */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-success {
+    background: #d4efdf;
+    color: #196f3d;
+    border: 1px solid #a9dfbf;
+}
+
+.badge-warning {
+    background: #fdebd0;
+    color: #b9770e;
+    border: 1px solid #f8c471;
+}
+
+.badge-danger {
+    background: #f9d5d5;
+    color: #922b21;
+    border: 1px solid #f2a8a8;
+}
+
+.badge-info {
+    background: #d4e6f1;
+    color: #1f618d;
+    border: 1px solid #a9cce3;
+}
+
+/* --- 9. Forms & Inputs --- */
+.filter-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-input {
+    padding: 8px 10px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    font-size: 13px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--gov-navy);
+    box-shadow: 0 0 0 2px rgba(11, 60, 93, 0.15);
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.btn-primary { background: var(--gov-navy); color: white; }
+.btn-primary:hover { background: var(--gov-navy-dark); }
+
+.btn-success { background: var(--gov-green); color: white; }
+.btn-success:hover { background: #0e6606; }
+
+.btn-danger { background: var(--gov-red); color: white; }
+.btn-danger:hover { background: #962d22; }
+
+.btn-warning { background: var(--gov-saffron); color: white; }
+.btn-warning:hover { background: #ba6515; }
+
+.btn-secondary { background: #e5e8e8; color: var(--text-primary); }
+.btn-secondary:hover { background: #ccd1d1; }
+
+/* --- 10. Document Upload & OCR Scanning Animation --- */
+.ocr-split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 18px;
+}
+
+.upload-dropzone {
+    border: 2px dashed #95a5a6;
+    background: #fcfcfc;
+    border-radius: var(--radius);
+    padding: 26px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 14px;
+}
+
+.upload-dropzone:hover {
+    border-color: var(--gov-navy);
+    background: #f4f6f7;
+}
+
+.dropzone-icon {
+    font-size: 36px;
+    color: var(--gov-navy);
+    margin-bottom: 6px;
+}
+
+/* OCR Visualizer & Scanning Beam */
+.ocr-scanner-box {
+    position: relative;
+    background: #212f3d;
+    border-radius: var(--radius);
+    padding: 14px;
+    color: #ffffff;
+    margin-top: 14px;
+    overflow: hidden;
+    display: none;
+}
+
+.ocr-scanner-box.scanning::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #2ecc71;
+    box-shadow: 0 0 10px #2ecc71, 0 0 20px #2ecc71;
+    animation: scanBeam 2s infinite ease-in-out;
+}
+
+@keyframes scanBeam {
+    0% { top: 0; }
+    50% { top: 100%; }
+    100% { top: 0; }
+}
+
+.scan-progress-bar {
+    height: 8px;
+    background: #566573;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.scan-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2ecc71, #f39c12);
+    transition: width 0.3s ease;
+}
+
+.ocr-terminal-text {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    color: #58d68d;
+    background: #17202a;
+    padding: 8px;
+    border-radius: 4px;
+    max-height: 120px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    margin-top: 8px;
+}
+
+/* --- 11. 5-Point Validation Checklist --- */
+.checklist-container {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 18px;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f2f3f4;
+}
+
+.checklist-item:last-child {
+    border-bottom: none;
+}
+
+.checklist-item .item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* Duplicate Conflict Cards */
+.dispute-card {
+    background: #ffffff;
+    border-left: 5px solid var(--gov-red);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.dispute-content h4 {
+    color: var(--gov-red);
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.dispute-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+    background: #fdf2e9;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* --- 12. Modal Windows --- */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
+}
+
+.modal-backdrop.active {
+    display: flex;
+}
+
+.modal-card {
+    background: #ffffff;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 620px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    border-top: 5px solid var(--gov-navy);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-head {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-head h3 {
+    color: var(--gov-navy);
+    font-size: 16px;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #7f8c8d;
+}
+
+.modal-body {
+    padding: 18px;
+}
+
+.modal-foot {
+    padding: 10px 18px;
+    background: #f8f9fa;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Official Record of Rights (RoR) Certificate Format */
+.deed-certificate-view {
+    border: 2px solid #bdc3c7;
+    padding: 16px;
+    background: #fffefb;
+    position: relative;
+    border-radius: 4px;
+}
+
+.stamp-seal {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    border: 2px dashed #138808;
+    color: #138808;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transform: rotate(-8deg);
+    border-radius: 4px;
+}
+
+/* --- 13. Government Footer --- */
+.gov-footer {
+    background: var(--gov-navy-dark);
+    color: #ffffff;
+    padding: 22px 20px 14px 20px;
+    margin-top: auto;
+    font-size: 12px;
+}
+
+.footer-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 25px;
+}
+
+.footer-col h4 {
+    color: var(--gov-saffron);
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.footer-col p, .footer-col li {
+    color: #bdc3c7;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col a {
+    color: #bdc3c7;
+    text-decoration: none;
+}
+
+.footer-col a:hover {
+    color: var(--gov-saffron);
+}
+
+.footer-copyright {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 18px;
+    padding-top: 10px;
+    font-size: 11px;
+    color: #95a5a6;
+}
+
+/* --- 14. Responsive Queries --- */
+@media (max-width: 900px) {
+    .dashboard-row { grid-template-columns: 1fr; }
+    .ocr-split-layout { grid-template-columns: 1fr; }
+    .footer-content { grid-template-columns: 1fr; gap: 18px; }
+    .main-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .header-auth-box { width: 100%; justify-content: space-between; }
+}
+
+@media (max-width: 600px) {
+    .nav-links { flex-direction: column; width: 100%; }
+    .nav-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .dispute-card { flex-direction: column; gap: 10px; }
+}
