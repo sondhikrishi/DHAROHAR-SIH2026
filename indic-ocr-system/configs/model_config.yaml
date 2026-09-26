@@ -1,0 +1,229 @@
+# IndicOCR Model Configuration
+# Edit this file to customize model behavior
+
+# Device: auto (detects CUDA), cuda, cpu, mps (Apple Silicon)
+device: "auto"
+
+# Global settings
+debug: false
+log_level: "INFO"
+batch_size: 4
+
+# ============================================================
+# MODEL CONFIGURATIONS
+# ============================================================
+models:
+  # PaddleOCR - Best all-rounder for Indic languages
+  paddle_ocr:
+    enabled: true
+    priority: 1  # Higher = tried first
+    det_model: "PP-OCRv4_server_det"  # Options: PP-OCRv4_server_det, PP-OCRv3_det, ch_PP-OCRv4_det
+    rec_model: "PP-OCRv4_server_rec"  # Options: PP-OCRv4_server_rec, PP-OCRv3_rec, ch_PP-OCRv4_rec
+    lang: "indian"  # Built-in: chinese, english, french, german, korean, japan, indian, etc.
+    use_angle_cls: true
+    use_space_char: true
+    drop_score: 0.5
+    det_db_thresh: 0.3
+    det_db_box_thresh: 0.6
+    det_db_unclip_ratio: 1.5
+    max_batch_size: 10
+    rec_batch_num: 6
+    # Custom model paths (if fine-tuned)
+    # det_model_dir: "models/paddle/det"
+    # rec_model_dir: "models/paddle/rec"
+    # rec_char_dict_path: "models/paddle/indian_dict.txt"
+
+  # TrOCR (Transformer-based) - Best for handprinted/handwritten
+  trocr:
+    enabled: true
+    priority: 2
+    model_name: "microsoft/trocr-base-handwritten"  # Base model
+    fine_tuned_path: "models/trocr-indic-finetuned"  # Your fine-tuned model
+    processor_name: "microsoft/trocr-base-handwritten"
+    max_length: 256
+    num_beams: 4
+    early_stopping: true
+    # Language-specific fine-tuned models (optional)
+    # language_models:
+    #   hi: "models/trocr-hi-finetuned"
+    #   bn: "models/trocr-bn-finetuned"
+
+  # Tesseract - Good fallback, supports many languages
+  tesseract:
+    enabled: true
+    priority: 3
+    tesseract_cmd: ""  # Auto-detect; set path if needed: "C:/Program Files/Tesseract-OCR/tesseract.exe"
+    langs:
+      - "hin"   # Hindi
+      - "ben"   # Bengali
+      - "tel"   # Telugu
+      - "mar"   # Marathi
+      - "tam"   # Tamil
+      - "guj"   # Gujarati
+      - "kan"   # Kannada
+      - "mal"   # Malayalam
+      - "pan"   # Punjabi
+      - "ori"   # Odia
+      - "asm"   # Assamese
+      - "urd"   # Urdu
+      - "eng"   # English
+      - "osd"   # Orientation and script detection
+    config: "--psm 6 --oem 3"  # PSM 6: Assume single uniform block of text
+    # Custom traineddata paths (if you have them)
+    # tessdata_dir: "models/tesseract/tessdata"
+
+  # EasyOCR - Good for scene text, decent Indic support
+  easyocr:
+    enabled: true
+    priority: 4
+    langs:
+      - "hi"
+      - "bn"
+      - "ta"
+      - "te"
+      - "kn"
+      - "ml"
+      - "en"
+    gpu: true  # Will auto-fallback to CPU
+    model_storage_dir: "models/easyocr"
+    download_enabled: true
+    detector: "dbnet18"  # or "craft"
+    recognizer: "standard"
+
+# ============================================================
+# ENSEMBLE CONFIGURATION
+# ============================================================
+ensemble:
+  # Strategy: confidence_weighted, majority_vote, best_single, weighted_average
+  strategy: "confidence_weighted"
+  
+  # Minimum confidence to accept a model's prediction
+  min_confidence: 0.55
+  
+  # IoU threshold for merging overlapping detections
+  iou_threshold: 0.5
+  
+  # Weights per model (used in weighted_average/confidence_weighted)
+  model_weights:
+    paddle_ocr: 1.0
+    trocr: 0.9
+    tesseract: 0.7
+    easyocr: 0.8
+  
+  # Language-specific overrides (model performs better for certain langs)
+  language_overrides:
+    hi:
+      primary: "paddle_ocr"
+      secondary: "trocr"
+    bn:
+      primary: "paddle_ocr"
+      secondary: "trocr"
+    ta:
+      primary: "paddle_ocr"
+      secondary: "easyocr"
+    te:
+      primary: "paddle_ocr"
+      secondary: "easyocr"
+    ur:
+      primary: "tesseract"
+      secondary: "paddle_ocr"
+    en:
+      primary: "trocr"
+      secondary: "paddle_ocr"
+
+# ============================================================
+# LANGUAGE IDENTIFICATION
+# ============================================================
+language_id:
+  enabled: true
+  model: "fasttext"  # Options: fasttext, langdetect, heuristic
+  fasttext_model: "models/lid.176.ftz"  # Auto-downloaded
+  # Confidence threshold for language detection
+  min_confidence: 0.7
+  # Fallback language if detection fails
+  fallback_language: "hi"
+  # Script-based heuristic (fast, no model needed)
+  use_script_heuristic: true
+
+# ============================================================
+# PREPROCESSING
+# ============================================================
+preprocessing:
+  enabled: true
+  # Auto-rotate based on OSD
+  auto_rotate: true
+  # Deskew correction
+  deskew: true
+  # Denoise
+  denoise: true
+  denoise_method: "nlm"  # nlm, gaussian, bilateral
+  # Contrast enhancement
+  enhance_contrast: true
+  clahe_clip_limit: 2.0
+  clahe_tile_grid: [8, 8]
+  # Binarization
+  binarize: false
+  binarize_method: "sauvola"  # sauvola, otsu, adaptive
+  # Resize (for very large/small images)
+  max_dimension: 3200
+  min_dimension: 640
+  # Morphological operations
+  morph_close: false
+  morph_kernel_size: 3
+
+# ============================================================
+# POST-PROCESSING
+# ============================================================
+postprocess:
+  # Indic language correction using IndicBERT
+  enable_indic_correction: true
+  correction_model: "ai4bharat/indicbert"  # or path to fine-tuned
+  correction_batch_size: 8
+  max_correction_length: 512
+  
+  # Land record specific field extraction
+  enable_land_record_parsing: true
+  land_record_schema: "configs/land_record_schema.yaml"
+  
+  # Text cleaning
+  remove_extra_whitespace: true
+  fix_common_ocr_errors: true
+  normalize_unicode: true  # NFC normalization
+  
+  # Confidence calibration
+  calibrate_confidence: true
+  temperature: 1.5
+
+# ============================================================
+# OUTPUT FORMAT
+# ============================================================
+output:
+  # Save cropped text regions
+  save_crops: false
+  crops_dir: "outputs/crops"
+  # Save visualization (boxes + text overlay)
+  save_visualization: false
+  viz_dir: "outputs/visualizations"
+  # Output format: json, csv, txt, all
+  format: "json"
+  output_dir: "outputs"
+  # Include metadata
+  include_metadata: true
+  include_confidence: true
+  include_bbox: true
+  include_language: true
+
+# ============================================================
+# PERFORMANCE
+# ============================================================
+performance:
+  # Enable ONNX runtime for faster inference (if available)
+  use_onnx: false
+  # Number of threads for CPU inference
+  num_threads: 4
+  # Enable TensorRT (requires GPU, complex setup)
+  use_tensorrt: false
+  # Memory optimization
+  enable_mkldnn: true
+  # Warmup runs
+  warmup_runs: 2

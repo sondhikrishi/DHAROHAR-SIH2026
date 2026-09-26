@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+
+# Uploaded documents
+uploads/
+
+# OCR/model caches
+.paddlex/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# CPH cache
+.cph/
+
+# Uploaded documents
+uploads/

@@ -1,0 +1,548 @@
+# Land Record Field Extraction Schema
+# Defines patterns and rules for extracting structured data from OCR text
+
+# ============================================================
+# FIELD DEFINITIONS
+# ============================================================
+fields:
+  # Unique land parcel identifier
+  survey_number:
+    display_name: "Survey Number"
+    patterns:
+      - regex: "(?:सर्वे|सर्वेक्षण|survey|survey no|survey number|SR|SR\\.?|SRNO)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:দাগ|দাগ নম্বর|dag|dag no)[\\s:]*([0-9/\\-]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:தொடர்பு|தொடர்பு எண்|survey)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:సರ್ವే|సర్వే Números|survey)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಸರ್ವೇ|ಸರ್ವೇ ನಂಬರ್|survey)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:സർവേ|സർവേ നമ്പർ|survey)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:سروی|سروی نمبر|survey)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      pattern: "^[A-Z0-9/\\-]+$"
+      min_length: 3
+      max_length: 20
+    required: true
+    confidence_boost: 0.1
+
+  # Khata/Khatian number
+  khata_number:
+    display_name: "Khata Number"
+    patterns:
+      - regex: "(?:खाता|खतौनी|खतियान|khata|khatian|khatoni)[\\s:]*([0-9]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:খতিয়ান|খাতা|khatian)[\\s:]*([0-9]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:பட்டா|பட்டா எண்|patta)[\\s:]*([0-9]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:పట్టు|పట్టు నంబరు|patta)[\\s:]*([0-9]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಪಟ್ಟೆ|ಪಟ್ಟೆ ನಂಬರ್|patta)[\\s:]*([0-9]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:പട്ടയം|പട്ടയം നമ്പർ|patta)[\\s:]*([0-9]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:खतौनी|खतियान|khata)[\\s:]*([0-9]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      pattern: "^[0-9]{3,6}$"
+    required: false
+    confidence_boost: 0.1
+
+  # Khasra number (often same as survey number in some states)
+  khasra_number:
+    display_name: "Khasra Number"
+    patterns:
+      - regex: "(?:खसरा|खसरा नंबर|khasra|khasra no|khasra number)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:খসড়া|খসড়া নম্বর|khasra)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["bn", "as"]
+        group: 1
+    validation:
+      pattern: "^[A-Z0-9/\\-]+$"
+    required: false
+    confidence_boost: 0.05
+
+  # Owner name
+  owner_name:
+    display_name: "Owner Name"
+    patterns:
+      - regex: "(?:मालिक|स्वामी|धारक|owner|name of owner|owner name)[\\s:]*([A-Za-z\\s\\.]+(?:[A-Za-z]+\\s){0,3})"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:মালিক|ধারক|owner)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:உரிமையாளர்|owner)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:స్వామి|owner)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಮಾಲೀಕ|owner)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?: ഉടമ|owner)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:مالک|owner)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 3
+      max_length: 100
+    required: true
+    confidence_boost: 0.15
+    post_process: "clean_person_name"
+
+  # Father/Husband name
+  father_name:
+    display_name: "Father/Husband Name"
+    patterns:
+      - regex: "(?:पिता|पुत्र|पुत्री|पत्नी|father|husband|s/o|d/o|w/o)[\\s:]*([A-Za-z\\s\\.]+(?:[A-Za-z]+\\s){0,3})"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:পিতা|পুত্র|father|husband)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:தந்தை|கணவர்|father|husband)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:తండ్రి|భర్త|father|husband)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ತಂದೆ|ಗಂಡ|father|husband)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:അച്ഛൻ|ഭർത്താവ്|father|husband)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:والد|شوہر|father|husband)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 3
+      max_length: 100
+    required: false
+    confidence_boost: 0.1
+    post_process: "clean_person_name"
+
+  # Village
+  village:
+    display_name: "Village"
+    patterns:
+      - regex: "(?:ग्राम|मौजा|गांव|village|vill)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s\\.]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:গ্রাম|মৌজা|village)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:கிராமம்|village)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:గ్రామం|village)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಗ್ರಾಮ|village)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:গ্রামം|village)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:گاؤں|موعزہ|village)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 2
+      max_length: 50
+    required: true
+    confidence_boost: 0.1
+
+  # Tehsil/Taluk
+  tehsil:
+    display_name: "Tehsil/Taluk"
+    patterns:
+      - regex: "(?:तहसील|तालुका|तालुक|tehsil|taluk|taluka)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s\\.]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:উপজেলা|তালুকা|tehsil)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:தாலுகா|tehsil)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:మండలం|tehsil)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ತಾಲೂಕು|tehsil)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:താലൂക്ക്|tehsil)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:تحصیل|tehsil)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 2
+      max_length: 50
+    required: true
+    confidence_boost: 0.1
+
+  # District
+  district:
+    display_name: "District"
+    patterns:
+      - regex: "(?:जिला|जिल्हा|district|dist)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s\\.]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:জেলা|district)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:மாவட்டம்|district)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:జిల్లా|district)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಜಿಲ್ಲೆ|district)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:ജില്ല|district)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:ضلع|district)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 2
+      max_length: 50
+    required: true
+    confidence_boost: 0.1
+
+  # State
+  state:
+    display_name: "State"
+    patterns:
+      - regex: "(?:राज्य|राज्|state)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s\\.]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:রাজ্য|state)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:மாநிலம்|state)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "($:రాష్ట్రం|state)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ರಾಜ್ಯ|state)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:രാജ്യം|state)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:ریاست|state)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 2
+      max_length: 50
+    required: true
+    confidence_boost: 0.1
+
+  # Land Area
+  area:
+    display_name: "Land Area"
+    patterns:
+      - regex: "(?:रकबा|क्षेत्रफल|एरिया|area|land area|extent)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:हेक्टेयर|hectare|ha|एकड़|acre|sq\\.?\\s*(?:मीटर|meter|m|ft|फीट|गज|yard|यार्ड)|वर्ग\\s*(?:मीटर|meter|फीट|feet)|गुंठा|guntha|कट्ठा|katha|बिघा|bigha|बिस्वा|biswa))"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:রকবা|এরিয়া|area)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:হেক্টেয়ার|hectare|একর|acre|বর্গ\\s*(?:মিটার|meter|ফুট|feet)|কট্টা|katha|বিঘা|bigha|বিশ্বা|biswa))"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:விரிவ்|அலவு|area)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:ஹெக்டேர்|hectare|ஏக்கர்|acre|சதுர\\s*(?:மீட்டர்|meter|அடி|feet)|குண்டா|gunta|கேநி|cent))"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:వ్యాసం|ఎక్స్టెంట్|area)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:హెక్టేర్|hectare|ఏకర|acre|చతుర\\s*(?:మీటర్|meter|అడుగులు|feet)|గుంట|gunta|సెంట్|cent))"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ವಿಸ್ತೀರ್ಣ|area)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:ಹೆಕ್ಟೇರ್|hectare|ಏಕರ್|acre|ಚತುರ\\s*(?:ಮೀಟರ್|meter|ಅಡಿ|feet)|ಗುಂಟಾ|gunta|ಸೆಂಟ್|cent))"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:വിസ്തീർണ്ണം|area)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:হেক্টেয়ার|hectare|ഏക്കർ|acre|ചതുര\\s*(?:മീറ്റർ|meter|അടി|feet)|സെന്റ്|cent))"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:רקב|क्षेत्रफल|area)[\\s:]*([0-9]+(?:\\.[0-9]+)?\\s*(?:हेक्टेयर|hectare|एकड़|acre))"
+        languages: ["ur"]
+        group: 1
+    validation:
+      pattern: "[0-9]+(?:\\.[0-9]+)?"
+    required: true
+    confidence_boost: 0.2
+    post_process: "parse_area"
+
+  # Land Type / Classification
+  land_type:
+    display_name: "Land Type"
+    patterns:
+      - regex: "(?:भूमि प्रकार|जमीन प्रकार|लैंड टाइप|land type|classification|category|प्रकार)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:জমির ধরন|land type)[\\s:]*([\\p{Bengali}\\s]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:நில வகை|land type)[\\s:]*([\\p{Tamil}\\s]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:భూమి రకం|land type)[\\s:]*([\\p{Telugu}\\s]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಭೂಮಿ ವಿಧ|land type)[\\s:]*([\\p{Kannada}\\s]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:നില തരം|land type)[\\s:]*([\\p{Malayalam}\\s]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:اراضی کی قسم|land type)[\\s:]*([\\p{Arabic}\\s]+)"
+        languages: ["ur"]
+        group: 1
+    keywords:
+      hi: ["कृषि", "कृषि भूमि", "आवासीय", "आवासीय भूमि", "वाणिज्यिक", "व्यावसायिक", "बंजर", "वन", "चारागाह", "नदी", "तालाब"]
+      bn: ["কৃষি", "কৃষি জমি", "আবাসিক", "বাণিজ্যিক", "বন", "নদী", "পুকুর"]
+      ta: ["விவசாய", "விவசாய நிலம்", "அபிவாசி", "வணிக", "காடு", "நதி", "குளம்"]
+      te: ["వ్యవసాయ", "వ్యవసాయ భూమి", "ఆవాసిక", "వ్యాపారిక", "అడవి", "నది", "చేручుక técnологియా"]
+      kn: ["ಕೃಷಿ", "ಕೃಷಿ ಭೂಮಿ", "ನಿವಾಸ", "ವಾಣಿಜ್ಯ", "ಕಾಡು", "ನದಿ", "ಕೇರಾ"]
+      ml: ["കൃഷി", "കൃഷി ഭൂമി", "ആവാസിക", "വാണിജ്യ", "കാട്", "നദി", "കുളം"]
+      gu: ["કૃષિ", "કૃષિ જમીન", "આવાસિક", "વ્યાપારિક", "જંગલ", "નદી", "તળાવ"]
+      pa: ["ਕ੍ਰਿਸ਼ੀ", "ਕ੍ਰਿਸ਼ੀ ਜ਼ਮੀਨ", "ਆਵਾਸੀਕ", "ਵਿਆਪਾਰੀਕ", "ਜੰਗਲ", "ਨਦੀ", "ਤਲਾਬ"]
+      ur: ["زرعی", "زرعی اراضی", "رہائشی", "تجارتی", "جنگل", "دریا", "تعلب"]
+      en: ["agricultural", "agricultural land", "residential", "commercial", "forest", "river", "pond", "barren", "pasture"]
+    required: false
+    confidence_boost: 0.15
+
+  # Mutation Number
+  mutation_number:
+    display_name: "Mutation Number"
+    patterns:
+      - regex: "(?:नामांतरण|दाखिल खारिज|म्यूटेशन|mutation|mutation no|mutation number)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:নামজারি|দাখিল খারিজ|mutation)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:நாமமாற்று|மিউடேஷன்|mutation)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(?:నామ మార్పు|మ్యుటేషన్|mutation)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ನಾಮ ಬದಲಾವಣೆ|ಮ್ಯುಟೇಶನ್|mutation)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:നാമ മാറ്റം|മുടേഷൻ|mutation)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(::انتقال|میوٹیشن|mutation)[\\s:]*([A-Z0-9/\\-]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      pattern: "^[A-Z0-9/\\-]+$"
+    required: false
+    confidence_boost: 0.1
+
+  # Registration Date
+  registration_date:
+    display_name: "Registration Date"
+    patterns:
+      - regex: "(?:पंजीकरण|रजिस्ट्री|बैनामा|निबंधन|registration|registration date|reg date|date of registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:নিবন্ধন|রেজিস্ট্রেশন|registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:பதிவு|ரஜிஸ்ட்ரேஷன்|registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["ta"]
+        group: 1
+      - regex: "(::నివంధన|రెజిస్ట్రేషన్|registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ನೊಂದಣಿ|ರೆಜಿಸ್ಟ್ರೇಷನ್|registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:നിബന്ധനം|റജിസ്ട്രേഷൻ|registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:رجسٹری|رجسٹریشن|registration)[\\s:]*([0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4})"
+        languages: ["ur"]
+        group: 1
+    validation:
+      pattern: "^[0-9]{1,2}[\\/\\-][0-9]{1,2}[\\/\\-][0-9]{2,4}$"
+    required: false
+    confidence_boost: 0.1
+    post_process: "normalize_date"
+
+  # Stamp Duty
+  stamp_duty:
+    display_name: "Stamp Duty"
+    patterns:
+      - regex: "(?:स्टाम्प शुल्क|स्टाम्प ड्यूटी|स्टाम्प|stamp duty|stamp fee)[\\s:]*([0-9,]+(?:\\.[0-9]+)?\\s*(?:रु|रुपये|रूपए|₹|Rs|INR))"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:স্ট্যাম্প ডিউটি|স্ট্যাম্প শুল্ক|stamp duty)[\\s:]*([0-9,]+(?:\\.[0-9]+)?\\s*(?:টাকা|৳|Rs|INR))"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:ஸ்டாம்ப் ட்யூட்டி|ஸ்டாம்ப் கட்டணம்|stamp duty)[\\s:]*([0-9,]+(?:\\.[0-9]+)?\\s*(?:ரூ|ரூபாய்|Rs|INR))"
+        languages: ["ta"]
+        group: 1
+      - regex: "(::స్టాంప్ డ్యూటీ|స్టాంప్ ప్రమాణం|stamp duty)[\\s:]*([0-9,]+(?:\\.[0-9]+)?\\s*(?:రూ|రూపాయి|Rs|INR))"
+        languages: ["te"]
+        group: 1
+    validation:
+      pattern: "[0-9,]+(?:\\.[0-9]+)?"
+    required: false
+    confidence_boost: 0.05
+    post_process: "parse_currency"
+
+  # Seller/Vendor
+  seller:
+    display_name: "Seller/Vendor"
+    patterns:
+      - regex: "(?:विक्रेता|बेचने वाला|seller|vendor|transferor)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s\\.]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:বিক্রেতা|seller)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:விற்பனையாளர்|seller)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(::విక్రేత|seller)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ವಿಕ್ರೇತರ|seller)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:വിക്രേതാവ്|seller)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:فروخت کنندہ|seller)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 3
+      max_length: 100
+    required: false
+    post_process: "clean_person_name"
+
+  # Buyer/Purchaser
+  buyer:
+    display_name: "Buyer/Purchaser"
+    patterns:
+      - regex: "(?:क्रेता|खरीदार|खरीदने वाला|buyer|purchaser|transferee)[\\s:]*([A-Za-z\\p{Devanagari}\\p{Bengali}\\p{Tamil}\\p{Telugu}\\p{Kannada}\\p{Malayalam}\\p{Gujarati}\\p{Gurmukhi}\\p{Oriya}\\s\\.]+)"
+        languages: ["hi", "mr", "en", "gu", "pa"]
+        group: 1
+      - regex: "(?:ক্রেতা|buyer)[\\s:]*([\\p{Bengali}\\s\\.]+)"
+        languages: ["bn", "as"]
+        group: 1
+      - regex: "(?:வாங்குபவர்|buyer)[\\s:]*([\\p{Tamil}\\s\\.]+)"
+        languages: ["ta"]
+        group: 1
+      - regex: "(::క్రేత|buyer)[\\s:]*([\\p{Telugu}\\s\\.]+)"
+        languages: ["te"]
+        group: 1
+      - regex: "(?:ಕ್ರೇತರ|buyer)[\\s:]*([\\p{Kannada}\\s\\.]+)"
+        languages: ["kn"]
+        group: 1
+      - regex: "(?:വാങ്ങുന്നവർ|buyer)[\\s:]*([\\p{Malayalam}\\s\\.]+)"
+        languages: ["ml"]
+        group: 1
+      - regex: "(?:خریدار|buyer)[\\s:]*([\\p{Arabic}\\s\\.]+)"
+        languages: ["ur"]
+        group: 1
+    validation:
+      min_length: 3
+      max_length: 100
+    required: false
+    post_process: "clean_person_name"
+
+# ============================================================
+# POST-PROCESSING FUNCTIONS
+# ============================================================
+post_process_functions:
+  clean_person_name:
+    description: "Clean and normalize person names"
+    steps:
+      - "strip"
+      - "remove_extra_spaces"
+      - "title_case"  # For Latin script
+      - "remove_titles"  # Remove Shri, Smt, Mr, Mrs, Dr, etc.
+  
+  parse_area:
+    description: "Parse area value and unit"
+    steps:
+      - "extract_number_and_unit"
+      - "convert_to_hectares"
+      - "standardize_format"
+  
+  normalize_date:
+    description: "Normalize date to YYYY-MM-DD"
+    steps:
+      - "parse_flexible_date"
+      - "format_iso"
+  
+  parse_currency:
+    description: "Parse currency amount"
+    steps:
+      - "extract_number"
+      - "remove_commas"
+      - "add_currency_code"
+
+# ============================================================
+# VALIDATION RULES
+# ============================================================
+validation_rules:
+  # Required fields for a valid land record
+  required_fields: ["survey_number", "owner_name", "village", "tehsil", "district", "state", "area"]
+  
+  # Cross-field validation
+  cross_validation:
+    - rule: "survey_number == khasra_number"
+      message: "Survey number and Khasra number should match"
+      severity: "warning"
+    - rule: "area > 0"
+      message: "Area must be positive"
+      severity: "error"
+    - rule: "registration_date <= today"
+      message: "Registration date cannot be in future"
+      severity: "warning"
+
+# ============================================================
+# OUTPUT TEMPLATE
+# ============================================================
+output_template:
+  # JSON structure for extracted data
+  include_raw_text: true
+  include_confidence_per_field: true
+  include_bbox_per_field: true
+  language_detection: true
+  processing_time: true

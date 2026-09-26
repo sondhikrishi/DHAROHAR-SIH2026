@@ -1,0 +1,475 @@
+# Language Code Mapping & Model Routing Configuration
+# Maps ISO 639-1/3 codes to model-specific language codes
+
+# ============================================================
+# LANGUAGE DEFINITIONS
+# ============================================================
+languages:
+  # Devanagari Script
+  hi:
+    name: "Hindi"
+    native_name: "हिन्दी"
+    script: "Devanagari"
+    iso639_1: "hi"
+    iso639_3: "hin"
+    tesseract_code: "hin"
+    easyocr_code: "hi"
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "North India"
+    speakers_millions: 600
+    priority: 1
+  
+  mr:
+    name: "Marathi"
+    native_name: "मराठी"
+    script: "Devanagari"
+    iso639_1: "mr"
+    iso639_3: "mar"
+    tesseract_code: "mar"
+    easyocr_code: ""  # Not directly supported
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Maharashtra"
+    speakers_millions: 99
+    priority: 2
+  
+  ne:
+    name: "Nepali"
+    native_name: "नेपाली"
+    script: "Devanagari"
+    iso639_1: "ne"
+    iso639_3: "nep"
+    tesseract_code: "nep"
+    easyocr_code: ""
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Nepal, Sikkim, Darjeeling"
+    speakers_millions: 25
+    priority: 5
+
+  # Bengali-Assamese Script
+  bn:
+    name: "Bengali"
+    native_name: "বাংলা"
+    script: "Bengali"
+    iso639_1: "bn"
+    iso639_3: "ben"
+    tesseract_code: "ben"
+    easyocr_code: "bn"
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "West Bengal, Tripura, Bangladesh"
+    speakers_millions: 265
+    priority: 1
+  
+  as:
+    name: "Assamese"
+    native_name: "অসমীয়া"
+    script: "Bengali"
+    iso639_1: "as"
+    iso639_3: "asm"
+    tesseract_code: "asm"
+    easyocr_code: ""
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Assam"
+    speakers_millions: 15
+    priority: 4
+  
+  or:
+    name: "Odia"
+    native_name: "ଓଡ଼ିଆ"
+    script: "Odia"
+    iso639_1: "or"
+    iso639_3: "ori"
+    tesseract_code: "ori"
+    easyocr_code: ""
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Odisha"
+    speakers_millions: 38
+    priority: 3
+
+  # Dravidian Scripts
+  ta:
+    name: "Tamil"
+    native_name: "தமிழ்"
+    script: "Tamil"
+    iso639_1: "ta"
+    iso639_3: "tam"
+    tesseract_code: "tam"
+    easyocr_code: "ta"
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Tamil Nadu, Sri Lanka"
+    speakers_millions: 75
+    priority: 1
+  
+  te:
+    name: "Telugu"
+    native_name: "తెలుగు"
+    script: "Telugu"
+    iso639_1: "te"
+    iso639_3: "tel"
+    tesseract_code: "tel"
+    easyocr_code: "te"
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Andhra Pradesh, Telangana"
+    speakers_millions: 95
+    priority: 1
+  
+  kn:
+    name: "Kannada"
+    native_name: "ಕನ್ನಡ"
+    script: "Kannada"
+    iso639_1: "kn"
+    iso639_3: "kan"
+    tesseract_code: "kan"
+    easyocr_code: "kn"
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Karnataka"
+    speakers_millions: 64
+    priority: 2
+  
+  ml:
+    name: "Malayalam"
+    native_name: "മലയാളം"
+    script: "Malayalam"
+    iso639_1: "ml"
+    iso639_3: "mal"
+    tesseract_code: "mal"
+    easyocr_code: "ml"
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Kerala"
+    speakers_millions: 38
+    priority: 2
+
+  # Northwestern Scripts
+  gu:
+    name: "Gujarati"
+    native_name: "ગુજરાતી"
+    script: "Gujarati"
+    iso639_1: "gu"
+    iso639_3: "guj"
+    tesseract_code: "guj"
+    easyocr_code: ""
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Gujarat"
+    speakers_millions: 56
+    priority: 2
+  
+  pa:
+    name: "Punjabi"
+    native_name: "ਪੰਜਾਬੀ"
+    script: "Gurmukhi"
+    iso639_1: "pa"
+    iso639_3: "pan"
+    tesseract_code: "pan"
+    easyocr_code: ""
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "Punjab"
+    speakers_millions: 113
+    priority: 2
+  
+  ur:
+    name: "Urdu"
+    native_name: "اردو"
+    script: "Arabic (Nastaliq)"
+    iso639_1: "ur"
+    iso639_3: "urd"
+    tesseract_code: "urd"
+    easyocr_code: ""
+    paddle_lang: "indian"
+    trocr_supported: true
+    region: "J&K, UP, Bihar, Telangana"
+    speakers_millions: 68
+    priority: 3
+
+  # English
+  en:
+    name: "English"
+    native_name: "English"
+    script: "Latin"
+    iso639_1: "en"
+    iso639_3: "eng"
+    tesseract_code: "eng"
+    easyocr_code: "en"
+    paddle_lang: "en"
+    trocr_supported: true
+    region: "Pan-India"
+    speakers_millions: 125
+    priority: 1
+
+# ============================================================
+# SCRIPT-BASED HEURISTIC (for fast language ID without model)
+# ============================================================
+script_mapping:
+  Devanagari: ["hi", "mr", "ne"]
+  Bengali: ["bn", "as"]
+  Odia: ["or"]
+  Tamil: ["ta"]
+  Telugu: ["te"]
+  Kannada: ["kn"]
+  Malayalam: ["ml"]
+  Gujarati: ["gu"]
+  Gurmukhi: ["pa"]
+  Arabic: ["ur"]
+  Latin: ["en"]
+
+# ============================================================
+# MODEL ROUTING RULES
+# ============================================================
+routing_rules:
+  # For each language, define model priority order
+  hi:
+    - {model: "paddle_ocr", weight: 1.0, condition: "printed"}
+    - {model: "trocr", weight: 0.9, condition: "handprinted"}
+    - {model: "tesseract", weight: 0.8, condition: "fallback"}
+  
+  bn:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "trocr", weight: 0.85}
+    - {model: "tesseract", weight: 0.7}
+  
+  ta:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "easyocr", weight: 0.9}
+    - {model: "trocr", weight: 0.8}
+  
+  te:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "easyocr", weight: 0.9}
+    - {model: "trocr", weight: 0.8}
+  
+  kn:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "easyocr", weight: 0.85}
+    - {model: "trocr", weight: 0.8}
+  
+  ml:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "easyocr", weight: 0.85}
+    - {model: "trocr", weight: 0.8}
+  
+  gu:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "trocr", weight: 0.85}
+    - {model: "tesseract", weight: 0.8}
+  
+  pa:
+    - {model: "paddle_ocr", weight: 1.0}
+    - {model: "trocr", weight: 0.85}
+    - {model: "tesseract", weight: 0.8}
+  
+  ur:
+    - {model: "tesseract", weight: 1.0}
+    - {model: "paddle_ocr", weight: 0.8}
+    - {model: "trocr", weight: 0.7}
+  
+  en:
+    - {model: "trocr", weight: 1.0}
+    - {model: "paddle_ocr", weight: 0.9}
+    - {model: "easyocr", weight: 0.85}
+    - {model: "tesseract", weight: 0.8}
+
+# ============================================================
+# LAND RECORD SPECIFIC VOCABULARY (per language)
+# ============================================================
+land_record_vocab:
+  hi:
+    keywords:
+      - "खसरा"
+      - "खतौनी"
+      - "मौजा"
+      - "तहसील"
+      - "जिला"
+      - "राज्य"
+      - "रकबा"
+      - "भूमि"
+      - "कृषि"
+      - "आवासीय"
+      - "वाणिज्यिक"
+      - "नामांतरण"
+      - "दाखिल खारिज"
+      - "पंजीकरण"
+      - "रजिस्ट्री"
+      - "बैनामा"
+      - "विक्रेता"
+      - "क्रेता"
+      - "गवाह"
+      - "स्टाम्प"
+      - "शुल्क"
+    number_patterns:
+      - r"\d+/\d+[A-Za-z]?"  # 142/2A
+      - r"\d{4,6}"  # Khata numbers
+      - r"\d+\.\d{4}"  # Area in hectares
+  
+  bn:
+    keywords:
+      - "দাগ নম্বর"
+      - "খতিয়ান"
+      - "মৌজা"
+      - "উপজেলা"
+      - "জেলা"
+      - "রকবা"
+      - "জমি"
+      - "কৃষি"
+      - "নামজারি"
+      - "দাখিল খারিজ"
+      - "নিবন্ধন"
+      - "বিক্রেতা"
+      - "ক্রেতা"
+  
+  ta:
+    keywords:
+      - "தொடர்பு எண்"
+      - "பட்டா"
+      - "கிராமம்"
+      - "தாலுகா"
+      - "மாவட்டம்"
+      - "நிலம்"
+      - "விவசாய"
+      - "நாமமாற்று"
+      - "பதிவு"
+      - "விற்பனையாளர்"
+      - "வாங்குபவர்"
+  
+  te:
+    keywords:
+      - "సర్వే సంఖ్య"
+      - "పట్టు"
+      -గ్రామం"
+      - "మండలం"
+      - "జಿಲ್ಲా"
+      - "భూమి"
+      - "వ్యవసాయ"
+      - "నామ మార్పు"
+      - "నివন্ধన"
+      - "విక్రేత"
+      - "క్రేత"
+  
+  mr:
+    keywords:
+      - "सर्वे क्रमांक"
+      - "सातबारा"
+      - "गाव"
+      - "तालुका"
+      - "जिल्हा"
+      - "शेत"
+      - "कृषी"
+      - "नामांतर"
+      - "नोंदणी"
+      - "विक्रेता"
+      - "खरेदीदार"
+  
+  gu:
+    keywords:
+      - "સર્વે નંબર"
+      - "સાતબારા"
+      - "ગામ"
+      - "તાલુકા"
+      - "જિલ્લો"
+      - "જમીન"
+      - "કૃષિ"
+      - "નામ ફેરફાર"
+      - "નોંધણી"
+      - "વિક્રેતા"
+      - "ખરીદાર"
+  
+  kn:
+    keywords:
+      - "ಸರ್ವೇ ನಂಬರ್"
+      - "ಪಟ್ಟೆ"
+      - "ಗ್ರಾಮ"
+      - "ತಾಲೂಕು"
+      - "ಜಿಲ್ಲೆ"
+      - "ಭೂಮಿ"
+      - "ಕೃಷಿ"
+      - "ನಾಮ ಬದಲಾವಣೆ"
+      - "ನೊಂದಣಿ"
+      - "ವಿಕ್ರೇತರ"
+      - "ಕ್ರೇತರ"
+  
+  ml:
+    keywords:
+      - "സർവേ നമ്പർ"
+      - "പട്ടയം"
+      - "গ্রാമം"
+      - "താലൂക്ക്"
+      - "ജില്ല"
+      - "നിലം"
+      - "കൃഷി"
+      - "നാമ മാറ്റം"
+      - "നিবന്ധനം"
+      - "വിക്രേതാവ്"
+      - "വാങ്ങുന്നവർ"
+  
+  pa:
+    keywords:
+      - "ਸਰਵੇ ਨੰਬਰ"
+      - "ਜਮਾਬੰਦੀ"
+      - "ਗਾਂਵ"
+      - "ਤਹਿਸੀਲ"
+      - "ਜ਼ਿਲ੍ਹਾ"
+      - "ਜ਼ਮੀਨ"
+      - "ਖੇਤੀਬਾੜੀ"
+      - "ਨਾਮ ਬਦਲੀ"
+      - "ਰਜਿਸਟ੍ਰੀ"
+      - "ਵਿਕਰੇਤਾ"
+      - "ਖਰੀਦਦਾਰ"
+  
+  ur:
+    keywords:
+      - "سرvey نمبر"
+      - "ختنون"
+      - "موعزہ"
+      - "تحصیل"
+      - "ضلع"
+      - "اراضی"
+      - "زرعی"
+      - "انتقال"
+      - "رجسٹری"
+      - "فروخت کنندہ"
+      - "خریدار"
+  
+  en:
+    keywords:
+      - "survey number"
+      - "khata"
+      - "khasra"
+      - "village"
+      - "tehsil"
+      - "district"
+      - "state"
+      - "area"
+      - "hectare"
+      - "acre"
+      - "agricultural"
+      - "residential"
+      - "commercial"
+      - "mutation"
+      - "registration"
+      - "registry"
+      - "seller"
+      - "buyer"
+      - "witness"
+      - "stamp duty"
+
+# ============================================================
+# DEFAULT LANGUAGE SET (for hackathon demo)
+# ============================================================
+default_languages: ["hi", "en", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur"]
+
+# Language groups for batch processing
+language_groups:
+  north: ["hi", "mr", "pa", "ur", "en"]
+  south: ["ta", "te", "kn", "ml", "en"]
+  east: ["bn", "as", "or", "en"]
+  west: ["gu", "mr", "hi", "en"]
+  all_indic: ["hi", "bn", "ta", "te", "kn", "ml", "mr", "gu", "pa", "or", "as", "ur"]

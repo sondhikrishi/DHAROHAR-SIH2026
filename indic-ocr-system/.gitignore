@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Models & Data (large files)
+models/
+*.bin
+*.pt
+*.pth
+*.onnx
+*.pdparams
+*.pdmodel
+data/test/
+data/samples/
+*.zip
+*.tar.gz
+*.rar
+
+# Outputs
+results/
+outputs/
+benchmark_results/
+*.log
+runs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
