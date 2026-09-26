@@ -58,10 +58,67 @@ function logout() {
   history.replaceState(null, "", "#login");
   showToast("You have been signed out.");
 }
-
-document.getElementById("loginForm").addEventListener("submit", (event) => {
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  openApp();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    showToast("Please enter email and password.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showToast(data.message || "Login failed.");
+      return;
+    }
+
+    // Save authentication information
+    localStorage.setItem("dharohar_token", data.access_token);
+    localStorage.setItem("dharohar_user", JSON.stringify(data.user));
+
+    showToast("Login successful.");
+
+    openApp();
+
+  } catch (error) {
+    console.error("Login error:", error);
+    showToast("Cannot connect to DHAROHAR server.");
+  }
+});
+
+// ============================================================
+// LOGIN / SIGNUP SWITCHING
+// ============================================================
+
+const loginForm = document.getElementById("loginForm");
+const signupForm = document.getElementById("signupForm");
+const showSignup = document.getElementById("showSignup");
+const showLogin = document.getElementById("showLogin");
+
+showSignup.addEventListener("click", () => {
+  loginForm.classList.add("hidden");
+  signupForm.classList.remove("hidden");
+});
+
+showLogin.addEventListener("click", () => {
+  signupForm.classList.add("hidden");
+  loginForm.classList.remove("hidden");
 });
 
 document.getElementById("togglePassword").addEventListener("click", () => {
@@ -205,14 +262,135 @@ document.getElementById("removeFile").addEventListener("click", resetFile);
 });
 dropZone.addEventListener("drop", event => handleFile(event.dataTransfer.files[0]));
 
-startOcr.addEventListener("click", () => {
+startOcr.addEventListener("click", async () => {
   if (!state.selectedFile) {
     showToast("Please select a land record first.");
     return;
   }
-  ocrStatus.textContent = "Ready";
-  ocrMessage.textContent = "OCR is ready to process the selected document.";
-  showToast("OCR is ready to process the selected document.");
+
+  const token = localStorage.getItem("dharohar_token");
+
+  if (!token) {
+    showToast("Please sign in again.");
+    logout();
+    return;
+  }
+
+  try {
+    startOcr.disabled = true;
+    ocrStatus.textContent = "Processing";
+    ocrStatus.classList.add("neutral");
+    ocrMessage.textContent = "Uploading document and processing OCR...";
+    showToast("Uploading land record...");
+
+    // --------------------------------------------------------
+    // STEP 1: Upload document
+    // --------------------------------------------------------
+
+    const formData = new FormData();
+    formData.append("file", state.selectedFile);
+
+    const uploadResponse = await fetch(
+      "http://127.0.0.1:5000/api/documents/upload",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      }
+    );
+
+    const uploadData = await uploadResponse.json();
+
+    if (!uploadResponse.ok) {
+      throw new Error(
+        uploadData.message || "Document upload failed."
+      );
+    }
+
+    const documentId =
+      uploadData.document?.id ||
+      uploadData.id ||
+      uploadData.document_id;
+
+    if (!documentId) {
+      throw new Error("Upload succeeded but document ID was not returned.");
+    }
+
+    showToast("Document uploaded. Starting OCR...");
+    ocrMessage.textContent = "Document uploaded. Running OCR...";
+
+    // --------------------------------------------------------
+    // STEP 2: Run OCR
+    // --------------------------------------------------------
+
+    const ocrResponse = await fetch(
+      `http://127.0.0.1:5000/api/documents/${documentId}/ocr`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const ocrData = await ocrResponse.json();
+
+    if (!ocrResponse.ok) {
+      throw new Error(
+        ocrData.message ||
+        ocrData.error ||
+        "OCR processing failed."
+      );
+    }
+
+    // --------------------------------------------------------
+    // STEP 3: Display OCR result
+    // --------------------------------------------------------
+
+    ocrStatus.textContent = "Completed";
+    ocrStatus.classList.remove("neutral");
+
+    const confidence =
+      ocrData.ocr?.confidence ??
+      ocrData.confidence ??
+      0;
+
+    const extractedText =
+      ocrData.ocr?.extracted_text ??
+      ocrData.extracted_text ??
+      "";
+
+    ocrMessage.textContent =
+      `OCR completed successfully. Confidence: ${confidence}%`;
+
+    showToast("OCR completed successfully.");
+
+    // Save result for Result page
+    localStorage.setItem(
+      "dharohar_ocr_result",
+      JSON.stringify({
+        document_id: documentId,
+        filename: state.selectedFile.name,
+        confidence: confidence,
+        extracted_text: extractedText
+      })
+    );
+
+    // Go to result page
+    showPage("result");
+
+  } catch (error) {
+    console.error("OCR workflow error:", error);
+
+    ocrStatus.textContent = "Failed";
+    ocrMessage.textContent = error.message;
+
+    showToast(error.message);
+
+    startOcr.disabled = false;
+  }
 });
 
 document.getElementById("validateBtn").addEventListener("click", () => {
@@ -228,3 +406,62 @@ window.addEventListener("hashchange", () => {
 if (location.hash && location.hash !== "#login") {
   openApp();
 }
+
+// ============================================================
+// SIGNUP / REGISTRATION
+// ============================================================
+
+signupForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const role = document.getElementById("signupRole").value;
+
+  if (!name || !email || !password || !role) {
+    showToast("Please fill all fields.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:5000/api/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+          role: role
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      showToast(data.message || "Registration failed.");
+      return;
+    }
+
+    showToast("Account created successfully.");
+
+    // Clear signup form
+    signupForm.reset();
+
+    // Return to login
+    signupForm.classList.add("hidden");
+    loginForm.classList.remove("hidden");
+
+    // Put registered email into login form
+    document.getElementById("email").value = email;
+
+  } catch (error) {
+    console.error("Signup error:", error);
+    showToast("Cannot connect to DHAROHAR server.");
+  }
+});

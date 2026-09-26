@@ -41,8 +41,72 @@
           <button type="button" class="text-button" id="forgotPassword">Forgot password?</button>
         </div>
 
-        <button class="primary-button full-width" type="submit">Sign In</button>
+        <button class="primary-button full-width" type="submit">
+    Sign In
+</button>
+
+       <div class="signup-option">
+    <span>Don't have an account?</span>
+    <button type="button" class="text-button" id="showSignup">
+        Create Account
+    </button>
+</div>
+      
       </form>
+
+      <form id="signupForm" class="login-form hidden">
+
+    <div class="field">
+        <label for="signupName">Full Name</label>
+        <input
+            id="signupName"
+            type="text"
+            placeholder="Enter your full name"
+            required
+        >
+    </div>
+
+    <div class="field">
+        <label for="signupEmail">Email</label>
+        <input
+            id="signupEmail"
+            type="email"
+            placeholder="Enter email"
+            required
+        >
+    </div>
+
+    <div class="field">
+        <label for="signupPassword">Password</label>
+        <input
+            id="signupPassword"
+            type="password"
+            placeholder="Create password"
+            required
+        >
+    </div>
+
+    <div class="field">
+        <label for="signupRole">Account Type</label>
+        <select id="signupRole" required>
+            <option value="citizen">Citizen</option>
+            <option value="patwari">Patwari</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
+
+    <button class="primary-button full-width" type="submit">
+        Create Account
+    </button>
+
+    <div class="signup-option">
+        <span>Already have an account?</span>
+        <button type="button" class="text-button" id="showLogin">
+            Sign In
+        </button>
+    </div>
+
+</form>
     </div>
   </section>
 
@@ -361,6 +425,6 @@
     </main>
   </div>
 
-  <script src="script.js"></script>
+  <script src="./js/script.js"></script>
 </body>
 </html>

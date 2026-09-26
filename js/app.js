@@ -10,14 +10,13 @@
 // 1. CONFIGURATION & STATE MANAGEMENT
 // ==========================================================================
 // Set to FALSE when running Flask backend (python backend/app.py) on localhost:5000!
-const API_BASE_URL = "https://dharohar-sih2026.onrender.com/api";
+const API_BASE_URL = "http://127.0.0.1:5000/api";
 const USE_MOCK_DATA = false;
-// Active user session state
-let currentUser = {
-    id: "PAT-402",
-    name: "Shri R. K. Sharma",
-    role: "patwari" // 'citizen', 'patwari', 'admin'
-};
+
+let authToken = localStorage.getItem("dharohar_token") || null;
+let currentUser = JSON.parse(
+    localStorage.getItem("dharohar_user") || "null"
+);
 
 // In-memory application datasets (loaded from localStorage or js/data.js)
 let recordsData = [];
@@ -59,87 +58,243 @@ function resetDemoData() {
 // 3. FLASK REST API SERVICE ADAPTER
 // ==========================================================================
 const apiService = {
-    // 1. Fetch land records with optional query parameters
-    async getRecords(params = {}) {
-        if (USE_MOCK_DATA) {
-            return recordsData;
+
+    async login(email, password) {
+
+        const res = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Login failed");
         }
-        try {
-            const query = new URLSearchParams(params).toString();
-            const res = await fetch(`${API_BASE_URL}/records?${query}`);
-            const data = await res.json();
-            return data.records;
-        } catch (err) {
-            console.warn("Flask API unavailable, falling back to mock data:", err);
-            return recordsData;
-        }
+
+        authToken = data.access_token;
+
+        currentUser = data.user;
+
+        localStorage.setItem(
+            "dharohar_token",
+            authToken
+        );
+
+        localStorage.setItem(
+            "dharohar_user",
+            JSON.stringify(currentUser)
+        );
+
+        return data;
     },
 
-    // 2. Upload document and get OCR text extraction
-    async uploadAndOCR(formData) {
-        if (USE_MOCK_DATA) {
-            return null; // Handled by simulateOCRScanner()
+
+    async getMe() {
+
+        if (!authToken) {
+            throw new Error("Not authenticated");
         }
-        try {
-            const res = await fetch(`${API_BASE_URL}/upload-ocr`, {
+
+        const res = await fetch(
+            `${API_BASE_URL}/auth/me`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Session expired");
+        }
+
+        currentUser = data.user || data;
+
+        localStorage.setItem(
+            "dharohar_user",
+            JSON.stringify(currentUser)
+        );
+
+        return data;
+    },
+
+
+    async getRecords() {
+
+        if (!authToken) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(
+            `${API_BASE_URL}/land-records`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                data.message || "Unable to fetch land records"
+            );
+        }
+
+        return data;
+    },
+
+
+    async getRecord(recordId) {
+
+        const res = await fetch(
+            `${API_BASE_URL}/land-records/${recordId}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                data.message || "Unable to fetch land record"
+            );
+        }
+
+        return data;
+    },
+
+
+    async uploadDocument(file) {
+
+        if (!authToken) {
+            throw new Error("Authentication required");
+        }
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        const res = await fetch(
+            `${API_BASE_URL}/documents/upload`,
+            {
                 method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                },
                 body: formData
-            });
-            return await res.json();
-        } catch (err) {
-            console.warn("Flask OCR error, falling back to simulation:", err);
-            return null;
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                data.message || "Document upload failed"
+            );
         }
+
+        return data;
     },
 
-    // 3. Commit new record to registry
-    async saveRecord(record) {
-        if (USE_MOCK_DATA) {
-            recordsData.unshift(record);
-            saveToStorage();
-            return { success: true, record };
+
+    async processOCR(documentId) {
+
+        if (!authToken) {
+            throw new Error("Authentication required");
         }
-        try {
-            const res = await fetch(`${API_BASE_URL}/records`, {
+
+        const res = await fetch(
+            `${API_BASE_URL}/documents/${documentId}/ocr`,
+            {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                data.message || data.error || "OCR processing failed"
+            );
+        }
+
+        return data;
+    },
+
+
+    async getOCRResult(documentId) {
+
+        const res = await fetch(
+            `${API_BASE_URL}/documents/${documentId}/ocr`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${authToken}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                data.message || "OCR result unavailable"
+            );
+        }
+
+        return data;
+    },
+
+
+    async saveRecord(record) {
+
+        const res = await fetch(
+            `${API_BASE_URL}/land-records`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`
+                },
                 body: JSON.stringify(record)
-            });
-            return await res.json();
-        } catch (err) {
-            console.warn("Flask save error, falling back to mock:", err);
-            recordsData.unshift(record);
-            saveToStorage();
-            return { success: true, record };
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                data.message || "Unable to save land record"
+            );
         }
+
+        return data;
     },
 
-    // 4. Fetch duplicate flags
-    async getDuplicates() {
-        if (USE_MOCK_DATA) {
-            return duplicatesData;
-        }
-        try {
-            const res = await fetch(`${API_BASE_URL}/duplicates`);
-            const data = await res.json();
-            return data.duplicates;
-        } catch (err) {
-            return duplicatesData;
-        }
-    },
 
-    // 5. Fetch audit logs
-    async getAuditLogs() {
-        if (USE_MOCK_DATA) {
-            return auditLogsData;
-        }
-        try {
-            const res = await fetch(`${API_BASE_URL}/audit-logs`);
-            const data = await res.json();
-            return data.logs;
-        } catch (err) {
-            return auditLogsData;
-        }
+    logout() {
+
+        authToken = null;
+        currentUser = null;
+
+        localStorage.removeItem("dharohar_token");
+        localStorage.removeItem("dharohar_user");
     }
 };
 
