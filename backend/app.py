@@ -2,9 +2,19 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt
+from auth import auth_bp
 from models import db, LandRecord, Document, OCRResult
 from ocr_service import extract_text
 app = Flask(__name__)
+
+# ============================================================
+# JWT CONFIGURATION
+# ============================================================
+
+app.config["JWT_SECRET_KEY"] = "change-this-to-a-strong-secret-key"
+
+jwt = JWTManager(app)
 
 # Allow frontend to communicate with Flask
 CORS(app)
@@ -18,6 +28,42 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize database
 db.init_app(app)
+
+# Register authentication routes
+app.register_blueprint(auth_bp)
+
+def require_role(*allowed_roles):
+
+    claims = get_jwt()
+    user_role = claims.get("role")
+
+    if user_role not in allowed_roles:
+        return jsonify({
+            "status": "error",
+            "message": "You do not have permission to perform this action",
+            "required_roles": list(allowed_roles)
+        }), 403
+
+    return None
+
+# ============================================================
+# CURRENT USER
+# ============================================================
+
+@app.route("/api/auth/me", methods=["GET"])
+@jwt_required()
+def get_current_user():
+
+    claims = get_jwt()
+
+    return jsonify({
+        "status": "success",
+        "user": {
+            "id": claims["sub"],
+            "email": claims.get("email"),
+            "role": claims.get("role")
+        }
+    }), 200
 
 # ============================================================
 # FILE UPLOAD CONFIGURATION
@@ -48,7 +94,11 @@ def allowed_file(filename):
 # ============================================================
 
 @app.route("/api/documents/upload", methods=["POST"])
+@jwt_required()
 def upload_document():
+
+    claims = get_jwt()
+    user_id = int(claims["sub"])
 
     if "file" not in request.files:
         return jsonify({
@@ -89,7 +139,8 @@ def upload_document():
         file_path=file_path,
         file_type=file.content_type or "unknown",
         file_size=file_size,
-        upload_status="Uploaded"
+        upload_status="Uploaded",
+        uploaded_by=user_id
     )
 
     db.session.add(document)
@@ -124,6 +175,7 @@ def home():
 # ============================================================
 
 @app.route("/api/documents/<int:document_id>/ocr", methods=["POST"])
+@jwt_required()
 def process_document_ocr(document_id):
 
     # --------------------------------------------------------
@@ -249,11 +301,77 @@ def process_document_ocr(document_id):
             "status": "error",
             "error": str(e)
         }), 500
+
+# ============================================================
+# GET OCR RESULT
+# ============================================================
+
+@app.route("/api/documents/<int:document_id>/ocr", methods=["GET"])
+@jwt_required()
+def get_ocr_result(document_id):
+
+    # --------------------------------------------------------
+    # Find document
+    # --------------------------------------------------------
+
+    document = db.session.get(Document, document_id)
+
+    if not document:
+        return jsonify({
+            "status": "error",
+            "message": "Document not found"
+        }), 404
+
+    # --------------------------------------------------------
+    # Find latest OCR result
+    # --------------------------------------------------------
+
+    ocr_result = (
+        OCRResult.query
+        .filter_by(document_id=document_id)
+        .order_by(OCRResult.id.desc())
+        .first()
+    )
+
+    if not ocr_result:
+        return jsonify({
+            "status": "error",
+            "message": "OCR result not found"
+        }), 404
+
+    # --------------------------------------------------------
+    # Return OCR result
+    # --------------------------------------------------------
+
+    return jsonify({
+        "status": "success",
+
+        "document": {
+            "id": document.id,
+            "filename": document.filename,
+            "upload_status": document.upload_status
+        },
+
+        "ocr": {
+            "id": ocr_result.id,
+            "extracted_text": ocr_result.extracted_text,
+            "confidence": float(
+                ocr_result.confidence_score
+            ),
+            "processing_status": ocr_result.processing_status,
+            "processed_at": (
+                ocr_result.processed_at.isoformat()
+                if ocr_result.processed_at
+                else None
+            )
+        }
+    }), 200
 # ============================================================
 # GET ALL LAND RECORDS
 # ============================================================
 
 @app.route("/api/land-records", methods=["GET"])
+@jwt_required()
 def get_land_records():
 
     records = LandRecord.query.all()
@@ -304,6 +422,7 @@ def get_land_records():
 # ============================================================
 
 @app.route("/api/land-records/<int:record_id>", methods=["GET"])
+@jwt_required()
 def get_land_record(record_id):
 
     record = db.session.get(LandRecord, record_id)
@@ -347,7 +466,13 @@ def get_land_record(record_id):
 # ============================================================
 
 @app.route("/api/land-records", methods=["POST"])
+@jwt_required()
 def create_land_record():
+
+    permission_error = require_role("patwari", "admin")
+
+    if permission_error:
+        return permission_error
 
     data = request.get_json()
 

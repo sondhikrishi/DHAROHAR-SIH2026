@@ -1,25 +1,17 @@
 import os
 
-# ============================================================
-# ENVIRONMENT SETTINGS
-# ============================================================
-
 os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
-
-# IMPORTANT:
-# Import torch BEFORE Paddle/PaddleOCR on this Windows setup.
-import torch
+os.environ["FLAGS_enable_pir_api"] = "0"
 
 import paddle
 
-# Disable problematic CPU features
 paddle.set_flags({
     "FLAGS_use_mkldnn": False,
     "FLAGS_enable_pir_api": False
 })
 
 from paddleocr import PaddleOCR
-
+from paddleocr import PaddleOCR
 
 # ============================================================
 # INITIALIZE HINDI OCR
@@ -49,25 +41,36 @@ def extract_text(image_path):
             f"OCR input file not found: {image_path}"
         )
 
-    results = list(ocr.predict(image_path))
+    try:
+        results = ocr.predict(
+            image_path
+        )
 
-    if not results:
-        return "", 0.0
+        texts = []
+        scores = []
 
-    result = results[0]
+        for result in results:
 
-    texts = result.get("rec_texts", [])
-    scores = result.get("rec_scores", [])
+            result_texts = result.get("rec_texts", [])
+            result_scores = result.get("rec_scores", [])
 
-    extracted_text = "\n".join(
-        text.strip()
-        for text in texts
-        if text and text.strip()
-    )
+            texts.extend(result_texts)
+            scores.extend(result_scores)
 
-    if scores:
-        confidence = sum(scores) / len(scores)
-    else:
-        confidence = 0.0
+        extracted_text = "\n".join(
+            text.strip()
+            for text in texts
+            if text and text.strip()
+        )
 
-    return extracted_text, confidence
+        if scores:
+            confidence = sum(scores) / len(scores)
+        else:
+            confidence = 0.0
+
+        return extracted_text, confidence
+
+    except Exception as e:
+        raise RuntimeError(
+            f"PaddleOCR prediction failed: {str(e)}"
+        ) from e
